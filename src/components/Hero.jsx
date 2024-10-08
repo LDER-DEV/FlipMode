@@ -13,9 +13,10 @@ export default function Hero(){
   return(
     <>
       <section>
-        <h1>Click for a challenge!</h1>
+        <h1>FlipMode</h1>
+        <h2>Click for a challenge!</h2>
         <button onClick={randomize}>GO!</button>
-        <h2>{challengesObj[challenge]}</h2>
+        <h3>{challengesObj[challenge]}</h3>
         {challenge == 3 && <Timer duration ={60000}/>}
       </section>
     </>
