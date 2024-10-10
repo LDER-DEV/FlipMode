@@ -1,4 +1,4 @@
-const challengesObj = [
+const challengesArray = [
   '',
   "Create a beat using this sample",
   "Re-do the sound design for this video",
@@ -16,4 +16,4 @@ const challengesObj = [
   "Make a beat with a tempo under 60 BPM"
 ];
 
-export default challengesObj;
+export default challengesArray;

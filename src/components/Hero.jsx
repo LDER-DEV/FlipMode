@@ -1,6 +1,8 @@
 import React from "react"
-import challengesObj from "../Challenges"
+import challengesArray from "../Challenges"
 import Timer from "./Timer"
+import sampleLinks from '../sampleLinks'
+import YoutubeSampler from "./YoutubeSampler"
 
 export default function Hero(){
   const [challenge, setChallenge] = React.useState(0)
@@ -16,8 +18,9 @@ export default function Hero(){
         <h1>FlipMode</h1>
         <h2>Click for a challenge!</h2>
         <button onClick={randomize}>GO!</button>
-        <h3>{challengesObj[challenge]}</h3>
-        {challenge == 3 && <Timer duration ={60000}/>}
+        <h3>{challengesArray[challenge]}</h3>
+        {challenge == 3 && <Timer duration ={600000}/>}
+        <YoutubeSampler sampleLinks = {sampleLinks} />
       </section>
     </>
   )
