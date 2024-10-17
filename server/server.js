@@ -8,6 +8,7 @@ app.use(cors({
   methods: 'GET,POST'
 }));
 
+
 app.get('/download', async (req, res) => {
   const url = req.query.url;
 
@@ -16,6 +17,9 @@ app.get('/download', async (req, res) => {
   }
 
   try {
+    const info = await ytdl.getInfo(url);
+    const sampleTitle = info.videoDetails.title || 'sample';
+
     const audioStream = ytdl(url, { filter: 'audioonly' });
     let bufferChunks = [];
 
@@ -26,7 +30,7 @@ app.get('/download', async (req, res) => {
     audioStream.on('end', () => {
       const buffer = Buffer.concat(bufferChunks);
 
-      res.setHeader('Content-Disposition', 'attachment; filename="sample.mp3"');
+      res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
       res.setHeader('Content-Type', 'audio/mpeg');
       res.send(buffer);
     });
