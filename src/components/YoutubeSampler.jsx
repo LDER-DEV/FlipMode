@@ -1,28 +1,57 @@
+import React, { useState } from 'react';
 
-export default function YoutubeSampler({sampleLinks}){
-const randomLink = sampleLinks[Math.floor(Math.random() * sampleLinks.length)]
-const embed = randomLink.url.split('=')
-const embedUrl = `https://www.youtube.com/embed/${embed}`
- const sampleDownload = async () =>{
-  try{
-    const response = await fetch(`http://localhost:3000/download?url=${randomLink.url}`)
-    const blob = await response.blob();
-    const url = URL.createObjectUrl(blob);
-    const link = document.createElement('a')
-    link.href = url
-    link.download ='sample.mp3'
-    document.body.appendChild(link)
-    link.click()
-    link.remove();
-  }catch(error){
-    console.error('Error downloading sample:', error)
-  }
-  }
+export default function YoutubeSampler({ sampleLinks }) {
+  const [downloadMessage, setDownloadMessage] = useState('');
+  const [downloadError, setDownloadError] = useState('');
 
-return(
-  <>
-     
-     <button onClick={sampleDownload}>Download track</button>
-  </>
-)
+  const sampleDownload = async (url, title) => {
+    try {
+      const response = await fetch(`http://localhost:3000/download?url=${url}`);
+  
+      // Check if the response is OK
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to download song');
+      }
+  
+      // Convert the response to a blob
+      const blob = await response.blob();
+      console.log(blob)
+
+      const urlBlob = URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = urlBlob;
+      downloadLink.download = `${title}`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+
+      console.log(urlBlob)
+
+  
+  
+  
+      // Set success message
+      setDownloadMessage('Your sample is ready');
+      setDownloadError('');
+    } catch (error) {
+      console.error('Error downloading sample:', error);
+      setDownloadError(error.message);
+      setDownloadMessage('');
+    }
+  };
+
+  const handleDownloadClick = () => {
+    const randomIndex = Math.floor(Math.random() * sampleLinks.length);
+    const randomLink = sampleLinks[randomIndex];
+    const songTittle = randomLink.title;
+    sampleDownload(randomLink.url, randomLink.title);
+  };
+
+  return (
+    <>
+      <button onClick={handleDownloadClick}>Download track</button>
+      {downloadMessage && <p>{downloadMessage}</p>}
+      {downloadError && <p style={{ color: 'red' }}>{downloadError}</p>}
+    </>
+  );
 }

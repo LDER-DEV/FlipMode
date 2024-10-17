@@ -14,9 +14,11 @@
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "g": "^2.0.1",
+    "mongodb": "^6.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "ytdl-core": "^4.11.5",
+    "uploadthing": "^7.1.0",
     "ytdl-mp3": "^5.0.0"
   },
   "devDependencies": {

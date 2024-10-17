@@ -2,7 +2,7 @@ import React from "react"
 import challengesArray from "../Challenges"
 import Timer from "./Timer"
 import sampleLinks from '../sampleLinks'
-// import YoutubeSampler from "./YoutubeSampler"
+import YoutubeSampler from "./YoutubeSampler"
 
 export default function Hero(){
   const [challenge, setChallenge] = React.useState(0)
@@ -20,8 +20,8 @@ export default function Hero(){
         <button onClick={randomize}>GO!</button>
         <h3>{challengesArray[challenge]}</h3>
         {challenge == 3 && <Timer duration ={600000}/>}
+        { challenge == 1 &&<YoutubeSampler sampleLinks = {sampleLinks} />  }
       </section>
     </>
   )
 }
-{/* /* <YoutubeSampler sampleLinks = {sampleLinks} /> */ }
