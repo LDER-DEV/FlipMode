@@ -1,33 +1,46 @@
-import express from 'express';import { Downloader } from 'ytdl-mp3';
-import cors from 'cors'
+import express from 'express';
+import ytdl from '@distube/ytdl-core';  // Updated import
+import cors from 'cors';
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:3000',
   methods: 'GET,POST'
 }));
 
-app.get('/download', async(req,res)=>{
+app.get('/download', async (req, res) => {
+  const url = req.query.url;
 
-  const sampleURL = req.query.url
-  if(!sampleURL){
-    return res.status(400).send('missing url parameter')
+  if (!url) {
+    return res.status(400).send({ error: 'No URL provided' });
   }
-  const downloader = new Downloader({
-    getTags: true,
-  })
 
+  try {
+    const audioStream = ytdl(url, { filter: 'audioonly' });
+    let bufferChunks = [];
 
-try{
-  const filePath = await downloader.downloadSong(sampleURL)
-  console.log('download file path',filePath)
-  res.download(filePath);
+    audioStream.on('data', (chunk) => {
+      bufferChunks.push(chunk);
+    });
 
-}catch(error){
-  res.status(500).send('download failed')
-}
+    audioStream.on('end', () => {
+      const buffer = Buffer.concat(bufferChunks);
+
+      res.setHeader('Content-Disposition', 'attachment; filename="sample.mp3"');
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.send(buffer);
+    });
+
+    audioStream.on('error', (error) => {
+      console.error('Error downloading audio:', error);
+      res.status(500).send({ error: 'Failed to download audio' });
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send({ error: error.message || 'An error occurred' });
+  }
 });
 
-app.listen(3000,()=>{
-  console.log('listening on 3000')
-})
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
