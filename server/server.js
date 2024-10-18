@@ -1,9 +1,8 @@
 import express from 'express';
+import path from 'path'; // Import path for serving static files
 import ytdl from '@distube/ytdl-core';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
 
 dotenv.config();
 
@@ -15,13 +14,7 @@ app.use(cors({
   methods: 'GET,POST',
 }));
 
-// Start the server
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
-
-// Your API route for downloading audio
+// API route for downloading audio
 app.get('/api/download', async (req, res) => {
   const url = req.query.url;
 
@@ -33,40 +26,31 @@ app.get('/api/download', async (req, res) => {
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
 
-    // Set up the path for the temporary file
-    const filePath = path.join(__dirname, `${sampleTitle}.mp3`);
+    res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
+    res.setHeader('Content-Type', 'audio/mpeg');
 
-    // Download the audio and save to file
     const audioStream = ytdl(url, { filter: 'audioonly' });
+    audioStream.pipe(res); // Stream audio directly to response
 
-    const fileStream = fs.createWriteStream(filePath);
-    audioStream.pipe(fileStream);
-
-    fileStream.on('finish', () => {
-      // Send the file to the client
-      res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.sendFile(filePath, (err) => {
-        if (err) {
-          console.error('Error sending file:', err);
-          res.status(500).send({ error: 'Failed to send file' });
-        }
-
-        // Optional: delete the file after sending to prevent clutter
-        fs.unlink(filePath, (unlinkErr) => {
-          if (unlinkErr) {
-            console.error('Error deleting file:', unlinkErr);
-          }
-        });
-      });
-    });
-
-    fileStream.on('error', (error) => {
-      console.error('Error writing file:', error);
-      res.status(500).send({ error: 'Failed to write audio to file' });
+    audioStream.on('error', (error) => {
+      console.error('Error downloading audio:', error);
+      res.status(500).send({ error: 'Failed to download audio' });
     });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send({ error: error.message || 'An error occurred' });
   }
+});
+
+// Serve React frontend (make sure this comes after your API routes)
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+// Start the server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
