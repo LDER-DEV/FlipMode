@@ -2,6 +2,7 @@ import React from "react";
 import challengesArray from "../Challenges";
 import Timer from "./Timer";
 import sampleLinks from '../sampleLinks';
+import YoutubeSampler from "./YoutubeSampler";
 
 export default function Hero() {
   const [challenge, setChallenge] = React.useState(0);
