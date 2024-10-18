@@ -8,9 +8,6 @@ export default function YoutubeSampler({ sampleLinks }) {
     try {
       const response = await fetch(`/api/download?url=${url}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
   
       // Check if the response is okay
