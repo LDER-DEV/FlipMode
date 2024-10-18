@@ -2,7 +2,6 @@ import express from 'express';
 import ytdl from '@distube/ytdl-core';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
 
 dotenv.config();
 
@@ -10,7 +9,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.ORIGIN || 'http://localhost:5174', // Your frontend URL
+  origin: process.env.ORIGIN || 'http://localhost:5173', // Your frontend URL
   methods: 'GET,POST',
 }));
 
@@ -50,18 +49,6 @@ app.get('/download', async (req, res) => {
   }
 });
 
-// Serve the React app (this should come after your API routes)
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Home route to serve the React app
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path if needed
-});
-
-// Catch-all route to serve the React app for client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path if needed
-});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
