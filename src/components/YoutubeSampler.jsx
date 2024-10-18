@@ -6,7 +6,7 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`/api/download?url=${encodeURIComponent(url)}`, {
+      const response = await fetch(`https://flipmode.up.railway.app//api/download?url=${encodeURIComponent(url)}`, {
         method: 'GET',
       });
       console.log(response, '-response');
