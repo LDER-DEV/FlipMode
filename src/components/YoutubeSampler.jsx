@@ -6,7 +6,7 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`https://flipmode.onrender.com/download?url=${url}`, {
+      const response = await fetch(`/download?url=${url}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
