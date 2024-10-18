@@ -1,12 +1,13 @@
 import express from 'express';
 import ytdl from '@distube/ytdl-core';  // Updated import
 import cors from 'cors';
-require('dotenv').config
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: process.env.ORIGIN||'http://localhost:5173' ||'https://flipmode.netlify.app',
+  origin: process.env.ORIGIN||'http://localhost:5174',
   methods: 'GET,POST'
 }));
 
