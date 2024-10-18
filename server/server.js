@@ -1,13 +1,18 @@
 import express from 'express';
 import ytdl from '@distube/ytdl-core';  // Updated import
 import cors from 'cors';
+require('dotenv').config
+
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.ORIGIN||'http://localhost:5173',
   methods: 'GET,POST'
 }));
 
+app.listen(process.env.PORT, () => {
+  console.log(`Server listening on port ${process.env.PORT || 3000}`);
+});
 
 app.get('/download', async (req, res) => {
   const url = req.query.url;
@@ -45,6 +50,3 @@ app.get('/download', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});

@@ -43,7 +43,6 @@ export default function YoutubeSampler({ sampleLinks }) {
   const handleDownloadClick = () => {
     const randomIndex = Math.floor(Math.random() * sampleLinks.length);
     const randomLink = sampleLinks[randomIndex];
-    const songTittle = randomLink.title;
     sampleDownload(randomLink.url, randomLink.title);
   };
 
