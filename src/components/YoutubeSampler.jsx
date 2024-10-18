@@ -6,7 +6,7 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`http://localhost:5173/download?url=${url}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/download?url=${url}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -19,7 +19,8 @@ export default function YoutubeSampler({ sampleLinks }) {
         throw new Error(errorData.error || 'Failed to download song');
       }
   
-
+      
+  
       // Convert the response to a blob
       const blob = await response.blob();
       const urlBlob = URL.createObjectURL(blob);
@@ -28,7 +29,7 @@ export default function YoutubeSampler({ sampleLinks }) {
       downloadLink.download = `${title}.mp3`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
-      console.log(downloadLink)
+      console.log(blob,urlBlob,downloadLink)
   
       setDownloadMessage('Your sample is ready');
       setDownloadError('');
@@ -38,7 +39,7 @@ export default function YoutubeSampler({ sampleLinks }) {
       setDownloadMessage('');
     }
   };
-
+  
   const handleDownloadClick = () => {
     const randomIndex = Math.floor(Math.random() * sampleLinks.length);
     const randomLink = sampleLinks[randomIndex];
