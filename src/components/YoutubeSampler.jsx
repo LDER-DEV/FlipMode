@@ -6,9 +6,10 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`/api/download?url=${url}`, {
+      const response = await fetch(`https://flipmode.vercel.app/api/download?url=${encodeURIComponent(url)}`, {
         method: 'GET',
       });
+      console.log(response, '-response');
   
       // Check if the response is okay
       if (!response.ok) {
