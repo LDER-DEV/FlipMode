@@ -20,31 +20,40 @@ app.listen(PORT, () => {
 });
 
 // Your API route for downloading audio
-app.get('/download', async (req, res) => {
+app.get('/api/download', async (req, res) => {
   const url = req.query.url;
 
   if (!url) {
+    console.error('No URL provided');
     return res.status(400).send({ error: 'No URL provided' });
   }
 
   try {
+    console.log(`Fetching video info for URL: ${url}`);
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
+    
+    console.log('Video title:', sampleTitle);
 
-    // Stream audio directly to the response
+    // Set headers for file download
     res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
     res.setHeader('Content-Type', 'audio/mpeg');
 
     const audioStream = ytdl(url, { filter: 'audioonly' });
     
-    audioStream.pipe(res); // Stream the audio directly
+    audioStream.pipe(res);
+    
+    audioStream.on('end', () => {
+      console.log('Audio streaming complete');
+    });
+
     audioStream.on('error', (error) => {
       console.error('Error downloading audio:', error);
       res.status(500).send({ error: 'Failed to download audio' });
     });
+    
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in backend:', error);
     res.status(500).send({ error: error.message || 'An error occurred' });
   }
 });
-
