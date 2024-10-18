@@ -3,7 +3,7 @@ import challengesArray from "../Challenges";
 import Timer from "./Timer";
 import sampleLinks from '../sampleLinks';
 import YoutubeSampler from "./YoutubeSampler";
-import Sampleoftheweek from "./sampleoftheweek";
+import WeeklySample from "./WeeklySample";
 
 
 export default function Hero() {
@@ -22,7 +22,7 @@ export default function Hero() {
         <h3>{challengesArray[challenge]}</h3>
         {challenge === 3 && <Timer duration={600000} />}
         {challenge === 1 && <YoutubeSampler sampleLinks={sampleLinks}/>}
-        {challenge === 0 && <Sampleoftheweek/>}
+        {challenge === 0 && <WeeklySample/>}
       </section>
     </>
   );

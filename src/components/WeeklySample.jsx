@@ -1,4 +1,4 @@
-export default function Sampleoftheweek(){
+export default function WeeklySample(){
 
 const trackDownload = async (url, title) =>{
   try {
