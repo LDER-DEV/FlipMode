@@ -1,8 +1,8 @@
 export default function WeeklySample(){
 
-const trackDownload = async (url, title) =>{
+const trackDownload = async () =>{
   try {
-    const response = await fetch('https://flipmode.up.railway.app/api/download?url=https://www.youtube.com/watch?v=x71SoqpALxQ&list=LL&index=110');
+    const response = await fetch('https://flipmode.up.railway.app/api/download?url=https://www.youtube.com/watch?v=x71SoqpALxQ');
     const audioBlob = await response.blob();
 
   }catch (error){
