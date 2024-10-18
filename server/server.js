@@ -2,58 +2,58 @@ import express from 'express';
 import ytdl from '@distube/ytdl-core';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import compression from 'compression';
 
 dotenv.config();
-
 const app = express();
 
-// CORS configuration
+// Middleware
 app.use(cors({
-  origin: 'https://flipmode.vercel.app/',
-  methods: 'GET,POST',
+  origin: process.env.ORIGIN || 'http://localhost:10000/',
+  methods: ['GET', 'POST'],
 }));
+app.use(compression());
 
-// Start the server
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || 'Internal Server Error',
+    },
+  });
 });
 
-// Your API route for downloading audio
+// Audio Download Route
 app.get('/api/download', async (req, res) => {
   const url = req.query.url;
 
   if (!url) {
-    console.error('No URL provided');
     return res.status(400).send({ error: 'No URL provided' });
   }
 
   try {
-    console.log(`Fetching video info for URL: ${url}`);
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
-    
-    console.log('Video title:', sampleTitle);
 
-    // Set headers for file download
     res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
     res.setHeader('Content-Type', 'audio/mpeg');
 
     const audioStream = ytdl(url, { filter: 'audioonly' });
-    
     audioStream.pipe(res);
-    
-    audioStream.on('end', () => {
-      console.log('Audio streaming complete');
-    });
 
     audioStream.on('error', (error) => {
       console.error('Error downloading audio:', error);
       res.status(500).send({ error: 'Failed to download audio' });
     });
-    
   } catch (error) {
-    console.error('Error in backend:', error);
+    console.error('Error:', error);
     res.status(500).send({ error: error.message || 'An error occurred' });
   }
+});
+
+// Start the server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
