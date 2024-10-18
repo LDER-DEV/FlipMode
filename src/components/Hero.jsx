@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from 'react-router-dom';
 import challengesArray from "../Challenges";
 import Timer from "./Timer";
 import sampleLinks from '../sampleLinks';
@@ -20,7 +19,7 @@ export default function Hero() {
         <button onClick={randomize}>GO!</button>
         <h3>{challengesArray[challenge]}</h3>
         {challenge === 3 && <Timer duration={600000} />}
-       {challenge === 1 && <Link to="/download">Go to Download</Link>}
+       {challenge === 1 && <YoutubeSampler sampleLinks={sampleLinks}/>}
       </section>
     </>
   );
