@@ -6,7 +6,7 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`http://localhost:3000/download?url=${url}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/download?url=${url}`);
   
       // Check if the response is OK
       if (!response.ok) {
