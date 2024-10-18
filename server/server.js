@@ -1,20 +1,20 @@
 import express from 'express';
-import ytdl from '@distube/ytdl-core';  // Updated import
+import ytdl from '@distube/ytdl-core';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
 const app = express();
+
+// CORS configuration
 app.use(cors({
-  origin: process.env.ORIGIN||'http://localhost:5174',
-  methods: 'GET,POST'
+  origin: process.env.ORIGIN || 'http://localhost:5174', // Set this to your frontend URL
+  methods: 'GET,POST',
 }));
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port ${process.env.PORT || 3000}`);
-});
-
+// Your API route
 app.get('/download', async (req, res) => {
   const url = req.query.url;
 
@@ -25,7 +25,7 @@ app.get('/download', async (req, res) => {
   try {
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
-
+    
     const audioStream = ytdl(url, { filter: 'audioonly' });
     let bufferChunks = [];
 
@@ -35,7 +35,6 @@ app.get('/download', async (req, res) => {
 
     audioStream.on('end', () => {
       const buffer = Buffer.concat(bufferChunks);
-
       res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
       res.setHeader('Content-Type', 'audio/mpeg');
       res.send(buffer);
@@ -51,3 +50,16 @@ app.get('/download', async (req, res) => {
   }
 });
 
+// Serve static files from the React app (place this after API routes)
+app.use(express.static(path.join(__dirname, 'build'))); // Adjust path as needed for your setup
+
+// Handle any other routes (this should come last)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path as needed
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
