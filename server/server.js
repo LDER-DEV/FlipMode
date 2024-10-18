@@ -10,11 +10,11 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.ORIGIN || 'http://localhost:5174', // Set this to your frontend URL
+  origin: process.env.ORIGIN || 'http://localhost:5174', // Your frontend URL
   methods: 'GET,POST',
 }));
 
-// Your API route
+// Your API route for downloading audio
 app.get('/download', async (req, res) => {
   const url = req.query.url;
 
@@ -25,7 +25,7 @@ app.get('/download', async (req, res) => {
   try {
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
-    
+
     const audioStream = ytdl(url, { filter: 'audioonly' });
     let bufferChunks = [];
 
@@ -50,12 +50,17 @@ app.get('/download', async (req, res) => {
   }
 });
 
-// Serve static files from the React app (place this after API routes)
-app.use(express.static(path.join(__dirname, 'build'))); // Adjust path as needed for your setup
+// Serve the React app (this should come after your API routes)
+app.use(express.static(path.join(__dirname, 'build')));
 
-// Handle any other routes (this should come last)
+// Home route to serve the React app
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path if needed
+});
+
+// Catch-all route to serve the React app for client-side routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path as needed
+  res.sendFile(path.join(__dirname, 'build', 'index.html')); // Adjust path if needed
 });
 
 // Start the server

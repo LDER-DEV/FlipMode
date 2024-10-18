@@ -6,31 +6,37 @@ export default function YoutubeSampler({ sampleLinks }) {
 
   const sampleDownload = async (url, title) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/download?url=${url}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/download?url=${url}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
   
-      // Check if the response is OK
+      // Check if the response is okay
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to download song');
       }
   
+      // Check for the Content-Type
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('audio/mpeg')) {
+        const errorText = await response.text();
+        console.error('Unexpected content type:', contentType);
+        console.error('Response body:', errorText);
+        throw new Error('Unexpected content type: ' + contentType);
+      }
+  
       // Convert the response to a blob
       const blob = await response.blob();
-      console.log(blob)
-
       const urlBlob = URL.createObjectURL(blob);
       const downloadLink = document.createElement('a');
       downloadLink.href = urlBlob;
-      downloadLink.download = `${title}`;
+      downloadLink.download = `${title}.mp3`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
-
-      console.log(urlBlob)
-
   
-  
-  
-      // Set success message
       setDownloadMessage('Your sample is ready');
       setDownloadError('');
     } catch (error) {
@@ -39,7 +45,7 @@ export default function YoutubeSampler({ sampleLinks }) {
       setDownloadMessage('');
     }
   };
-
+  
   const handleDownloadClick = () => {
     const randomIndex = Math.floor(Math.random() * sampleLinks.length);
     const randomLink = sampleLinks[randomIndex];
