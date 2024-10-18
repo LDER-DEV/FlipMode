@@ -1,10 +1,31 @@
+import express from 'express';
 import ytdl from '@distube/ytdl-core';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import compression from 'compression';
 
-export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).send({ error: 'Method not allowed' });
-  }
+dotenv.config();
+const app = express();
 
+// Middleware
+app.use(cors({
+  origin: process.env.ORIGIN || 'http://localhost:10000/',
+  methods: ['GET', 'POST'],
+}));
+app.use(compression());
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || 'Internal Server Error',
+    },
+  });
+});
+
+// Audio Download Route
+app.get('/api/download', async (req, res) => {
   const url = req.query.url;
 
   if (!url) {
@@ -15,13 +36,12 @@ export default async function handler(req, res) {
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
 
-    // Stream audio directly to the response
     res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
     res.setHeader('Content-Type', 'audio/mpeg');
 
     const audioStream = ytdl(url, { filter: 'audioonly' });
-
     audioStream.pipe(res);
+
     audioStream.on('error', (error) => {
       console.error('Error downloading audio:', error);
       res.status(500).send({ error: 'Failed to download audio' });
@@ -30,4 +50,10 @@ export default async function handler(req, res) {
     console.error('Error:', error);
     res.status(500).send({ error: error.message || 'An error occurred' });
   }
-}
+});
+
+// Start the server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
