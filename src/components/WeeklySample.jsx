@@ -1,8 +1,9 @@
 export default function WeeklySample(){
 
 const trackDownload = async () =>{
+const url ='https://www.youtube.com/watch?v=1fjPYAPQFno'
   try {
-    const response = await fetch(`https://flipmode.up.railway.app/api/download?url=https://www.youtube.com/watch?v=x71SoqpALxQ`, {
+    const response = await fetch(`https://flipmode.up.railway.app/api/download?url=${url}`, {
       method: 'GET',
     });
     console.log(response, '-response');
@@ -24,6 +25,9 @@ const trackDownload = async () =>{
     document.body.appendChild(downloadLink);
     downloadLink.click();
     console.log(blob,urlBlob,downloadLink)
+
+    //unhide iframe youtube video of sample
+    document.querySelector('iframe').classList.remove('hide');
   }catch (error){
     console.error(error);
     alert('An error occurred while downloading the track.');
@@ -33,6 +37,9 @@ const trackDownload = async () =>{
   return(
     <div>
       <button onClick={trackDownload}>Sample of the week</button>
+      <iframe className = 'hide' width="420" height="315"
+         src="https://www.youtube.com/embed/1fjPYAPQFno">
+      </iframe>
     </div>
   )
 }

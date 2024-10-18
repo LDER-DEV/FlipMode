@@ -66,3 +66,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+iframe{
+  clear: both;
+  width: 100%;
+  height: 350px;
+  z-index: 0;
+}
+
+.hide{
+  display:none;
+}
