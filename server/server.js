@@ -13,6 +13,12 @@ app.use(cors({
   methods: 'GET,POST',
 }));
 
+// Start the server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+
 // Your API route for downloading audio
 app.get('/download', async (req, res) => {
   const url = req.query.url;
@@ -25,20 +31,13 @@ app.get('/download', async (req, res) => {
     const info = await ytdl.getInfo(url);
     const sampleTitle = info.videoDetails.title || 'sample';
 
+    // Stream audio directly to the response
+    res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
+    res.setHeader('Content-Type', 'audio/mpeg');
+
     const audioStream = ytdl(url, { filter: 'audioonly' });
-    let bufferChunks = [];
-
-    audioStream.on('data', (chunk) => {
-      bufferChunks.push(chunk);
-    });
-
-    audioStream.on('end', () => {
-      const buffer = Buffer.concat(bufferChunks);
-      res.setHeader('Content-Disposition', `attachment; filename="${sampleTitle}.mp3"`);
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.send(buffer);
-    });
-
+    
+    audioStream.pipe(res); // Stream the audio directly
     audioStream.on('error', (error) => {
       console.error('Error downloading audio:', error);
       res.status(500).send({ error: 'Failed to download audio' });
@@ -49,9 +48,3 @@ app.get('/download', async (req, res) => {
   }
 });
 
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
