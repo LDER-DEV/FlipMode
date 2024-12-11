@@ -17,13 +17,17 @@ export default function Hero() {
   return (
     <>
       <section>
-        <h1>FlipMode</h1>
-        <button onClick={randomize}>Click for a challenge!</button>
-        <h3>{challengesArray[challenge]}</h3>
-        {challenge === 3 && <Timer duration={600000} />}
-        {challenge === 1 && <YoutubeSampler sampleLinks={sampleLinks}/>}
-        {challenge === 0 && <WeeklySample/>}
+        <h1>Working on updates, Be back soon.</h1>
       </section>
     </>
   );
 }
+
+{/* <section>
+<h1>FlipMode</h1>
+<button onClick={randomize}>Click for a challenge!</button>
+<h3>{challengesArray[challenge]}</h3>
+{challenge === 3 && <Timer duration={600000} />}
+{challenge === 1 && <YoutubeSampler sampleLinks={sampleLinks}/>}
+{challenge === 0 && <WeeklySample/>}
+</section> */}
